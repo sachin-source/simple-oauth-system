@@ -17,7 +17,6 @@ const UserSchema = new Schema({
   role: { type: String, default: 'user', trim: true, required: true },
   authToken: { type: String, default: '' },
   notificationToken: [{ type: String }],
-  google: {},
 });
 
 const validatePresenceOf = value => value && value.length;
@@ -35,16 +34,13 @@ UserSchema.virtual('password')
     return this._password;
   });
 
-UserSchema.virtual('id').get(function () {
-  return this._id;
-});
-
 UserSchema.set('toJSON', {
   virtuals: true,
   transform: function (doc, ret) {
     delete ret._id;
   }
 });
+
 /**
  * Pre-save hook
  */
@@ -92,7 +88,6 @@ UserSchema.methods = {
       return '';
     }
   },
-
 };
 
 /**
@@ -100,12 +95,12 @@ UserSchema.methods = {
  */
 
 UserSchema.statics = {
+
   /**
    * Load
-   *
-   * @param {Object} options
-   * @param {Function} cb
-   * @api private
+   * @param {Object} options for find select
+   * @param {Fucntion} cb to send back the user data
+   * @description Load the public data of particular user
    */
 
   load: function (options, cb) {
@@ -114,21 +109,43 @@ UserSchema.statics = {
       .select(options.select)
       .exec(cb);
   },
+
+  /**
+   * List
+   * @param {Object} options for find select
+   * @param {Fucntion} cb to send back the users' data
+   * @description Load the public data of users - not used now
+   */
+
   list: function (options, cb) {
     const { find, select = 'name email -_id' } = options;
     return this.find(find)
       .select(select)
       .exec(cb);
   },
+
+    /**
+   * Signup
+   * @param {Object} options includes email, name, password and role of new user
+   * @param {Fucntion} cb to send back the status
+   * @description Very bare minimum functionality for singup, will be updated soon
+   */
+
   signUp: function (options, cb) {
-    const { email, name, password } = options;
-    const adminMails = ['sachinadmin@gmail.com', 'sachinmgvt@gmail.com']
-    const user = new this({ email, name, password, role: adminMails.includes(email) ? 'admin' : 'user' });
+    const { email, name, password, role } = options;
+    const user = new this({ email, name, password, role });
     user.save((err, response) => {
-      console.log(err, response)
       cb(err, response)
     })
   },
+  
+    /**
+   * Login
+   * @param {Object} options includes email, and password of user
+   * @param {Fucntion} cb to send back the authentication status
+   * @description login functionality
+   */
+
   login: function (options, cb) {
     const { email, password } = options;
     this.findOne({ email }, (err, data) => {
