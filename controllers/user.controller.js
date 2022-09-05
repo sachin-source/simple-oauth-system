@@ -25,6 +25,10 @@ const signUp = (req, res) => {
     })
 };
 
+const signUpOtp = () => {}
+const signUpPassword = () => {}
+const forgetPasswordEmail = () => {}
+const forgetPasswordOtp = () => {}
+const forgetPasswordPassword = () => {}
 
-
-module.exports = { login, signUp }
+module.exports = { login, signUp, signUpOtp, signUpPassword, forgetPasswordEmail, forgetPasswordOtp, forgetPasswordPassword }
